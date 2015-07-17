@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/Users/dkulsch/workspace-private-StudioProjects/AndroidRestFulWSExample/app/libs/android-async-http-1.4.4.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="3bae85a076241828810bf8fbcc12e5891d5fc34c">
+        <dex dex="/Users/dkulsch/workspace-private-StudioProjects/AndroidRestFulWSExample/app/build/intermediates/pre-dexed/debug/android-async-http-1.4.4-e95b0193649b884ceb0742439aaf5efe0df809cb.jar" />
+    </item>
+    <item
+        jar="/Users/dkulsch/workspace-private-StudioProjects/AndroidRestFulWSExample/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/19.1.0/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="3499ceba05ca1f6037c6a2fad73df8f636224a28">
+        <dex dex="/Users/dkulsch/workspace-private-StudioProjects/AndroidRestFulWSExample/app/build/intermediates/pre-dexed/debug/classes-ccf025e9d99c38723c2631d9f97144eeb489dbb2.jar" />
+    </item>
+    <item
+        jar="/Users/dkulsch/Library/Android/sdk/extras/android/m2repository/com/android/support/support-v4/19.1.0/support-v4-19.1.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67">
+        <dex dex="/Users/dkulsch/workspace-private-StudioProjects/AndroidRestFulWSExample/app/build/intermediates/pre-dexed/debug/support-v4-19.1.0-97b6f400ed887e3a5678384415ac366b36380d6f.jar" />
+    </item>
+
+</items>
