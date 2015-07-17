@@ -127,9 +127,9 @@ public class LoginActivity extends Activity {
 
                 //
 
-                email=pParams[0];
-                password=pParams[1];
-                url=pParams[2];
+                email=urls[0];
+                password=urls[1];
+                url=urls[2];
                 ///TODO: switch if https
                 HttpHost targetHost = new HttpHost(url, 80, "http");
                 Log.i("targetHost.getHostName", targetHost.getHostName());
