@@ -1,20 +1,39 @@
 package com.prgguru.example;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLContexts;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import javax.net.ssl.SSLContext;
+
+//#import com.loopj.android.http.AsyncHttpClient;
+//import com.loopj.android.http.AsyncHttpResponseHandler;
+//import com.loopj.android.http.RequestParams;
 /**
  * 
  * Login Activity Class 
@@ -64,16 +83,13 @@ public class LoginActivity extends Activity {
 		String password = pwdET.getText().toString();
 		// Get Password Edit View Value
 		String url = urlET.getText().toString();
-		// Instantiate Http Request Param Object
-		RequestParams params = new RequestParams();
+
 		// When Email Edit View and Password Edit View have values other than Null
 		if(Utility.isNotNull(email) && Utility.isNotNull(password) && Utility.isNotNull(url)){
 				// Put Http parameter username with value of Email Edit View control
-				params.put("username", email);
-				// Put Http parameter password with value of Password Edit Value control
-				params.put("password", password);
 				// Invoke RESTful Web Service with Http parameters
-				invokeWS(params, url);
+				String rueckgabe=invokeWS(email, password, url);
+            Toast.makeText(getApplicationContext(), rueckgabe, Toast.LENGTH_LONG).show();
 		} 
 		// When any of the Edit View control left blank
 		else{
@@ -87,37 +103,70 @@ public class LoginActivity extends Activity {
 	 * 
 	 * @param params
 	 */
-	public void invokeWS(RequestParams params, String url){
+	public String invokeWS(String email, String password, String url){
 		// Show Progress Dialog
 		 prgDialog.show();
-		 // Make RESTful webservice call using AsyncHttpClient object
-		 AsyncHttpClient client = new AsyncHttpClient();
-         client.get("http://"+url+"/api",params ,new AsyncHttpResponseHandler() {
-        	 // When the response returned by REST has Http response code '200'
-             @Override
-             public void onSuccess(String response) {
-            	 // Hide Progress Dialog
-            	 prgDialog.hide();
-                 try {
-                	 	 // JSON Object
-                         JSONObject obj = new JSONObject(response);
-                         // When the JSON response has status boolean value assigned with true
-                         if(obj.getBoolean("status")){
-                        	 Toast.makeText(getApplicationContext(), "You are successfully logged in!", Toast.LENGTH_LONG).show();
-                        	 // Navigate to Home screen
-                        	 navigatetoHomeActivity();
-                         } 
-                         // Else display error message
-                         else{
-                        	 errorMsg.setText(obj.getString("error_msg"));
-                        	 Toast.makeText(getApplicationContext(), obj.getString("error_msg"), Toast.LENGTH_LONG).show();
-                         }
-                 } catch (JSONException e) {
-                     // TODO Auto-generated catch block
-                     Toast.makeText(getApplicationContext(), "Error Occured [Server's JSON response might be invalid]!", Toast.LENGTH_LONG).show();
-                     e.printStackTrace();
-                     
-                 }
+        String BASE_URL="http://"+url+"/api";
+
+        HttpHost targetHost = new HttpHost(url,80,"http");
+        CredentialsProvider credsProvider = new BasicCredentialsProvider();
+        credsProvider.setCredentials(AuthScope.ANY,new UsernamePasswordCredentials(email, password));
+
+        AuthCache authCache = new BasicAuthCache();
+        authCache.put(targetHost,new BasicScheme());
+
+        final HttpClientContext context = HttpClientContext.create();
+        context.setCredentialsProvider(credsProvider);
+        context.setAuthCache(authCache);
+
+        SSLContext sslContext = SSLContexts.createSystemDefault();
+        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext);
+
+        HttpClient client = HttpClientBuilder.create().setSSLSocketFactory(sslsf).build();
+        try {
+            HttpResponse response = client.execute(new HttpGet(BASE_URL), context);
+            String json_string = EntityUtils.toString(response.getEntity());
+            Log.i("JSON", json_string);
+            int statusCode = response.getStatusLine().getStatusCode();
+            Log.i("RESP",response.getEntity().getContent().toString());
+
+            Log.i("STATUS", "" + statusCode);
+            prgDialog.hide();
+
+            return response.toString();
+
+            try {
+                // JSON Object
+                JSONObject obj = new JSONObject(response);
+                // When the JSON response has status boolean value assigned with true
+                if(obj.getBoolean("status")){
+                    Toast.makeText(getApplicationContext(), "You are successfully logged in!", Toast.LENGTH_LONG).show();
+                    // Navigate to Home screen
+                     LoginActivity::navigatetoHomeActivity();
+                }
+                // Else display error message
+                else{
+                    errorMsg.setText(obj.getString("error_msg"));
+                    Toast.makeText(getApplicationContext(), obj.getString("error_msg"), Toast.LENGTH_LONG).show();
+                }
+            } catch (JSONException e) {
+                // TODO Auto-generated catch block
+                Toast.makeText(getApplicationContext(), "Error Occured [Server's JSON response might be invalid]!", Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+
+            }
+
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        prgDialog.hide();
+
+        return "";
+
+
+
+
              }
              // When the response returned by REST has Http response code other than '200'
              @Override
