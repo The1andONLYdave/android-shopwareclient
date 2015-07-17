@@ -135,28 +135,6 @@ public class LoginActivity extends Activity {
 
             return response.toString();
 
-            try {
-                // JSON Object
-                JSONObject obj = new JSONObject(response);
-                // When the JSON response has status boolean value assigned with true
-                if(obj.getBoolean("status")){
-                    Toast.makeText(getApplicationContext(), "You are successfully logged in!", Toast.LENGTH_LONG).show();
-                    // Navigate to Home screen
-                     LoginActivity::navigatetoHomeActivity();
-                }
-                // Else display error message
-                else{
-                    errorMsg.setText(obj.getString("error_msg"));
-                    Toast.makeText(getApplicationContext(), obj.getString("error_msg"), Toast.LENGTH_LONG).show();
-                }
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                Toast.makeText(getApplicationContext(), "Error Occured [Server's JSON response might be invalid]!", Toast.LENGTH_LONG).show();
-                e.printStackTrace();
-
-            }
-
-
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -165,30 +143,7 @@ public class LoginActivity extends Activity {
         return "";
 
 
-
-
-             }
-             // When the response returned by REST has Http response code other than '200'
-             @Override
-             public void onFailure(int statusCode, Throwable error,
-                 String content) {
-                 // Hide Progress Dialog 
-                 prgDialog.hide();
-                 // When Http response code is '404'
-                 if(statusCode == 404){
-                     Toast.makeText(getApplicationContext(), "Requested resource not found", Toast.LENGTH_LONG).show();
-                 } 
-                 // When Http response code is '500'
-                 else if(statusCode == 500){
-                     Toast.makeText(getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
-                 } 
-                 // When Http response code other than 404, 500
-                 else{
-                     Toast.makeText(getApplicationContext(), "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
-                 }
-             }
-         });
-	}
+    }
 	
 	/**
 	 * Method which navigates from Login Activity to Home Activity
