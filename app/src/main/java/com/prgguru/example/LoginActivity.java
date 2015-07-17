@@ -2,7 +2,11 @@ package com.prgguru.example;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,21 +14,19 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -88,8 +90,20 @@ public class LoginActivity extends Activity {
 		if(Utility.isNotNull(email) && Utility.isNotNull(password) && Utility.isNotNull(url)){
 				// Put Http parameter username with value of Email Edit View control
 				// Invoke RESTful Web Service with Http parameters
-				String rueckgabe=invokeWS(email, password, url);
-            Toast.makeText(getApplicationContext(), rueckgabe, Toast.LENGTH_LONG).show();
+
+            ConnectivityManager connMgr = (ConnectivityManager)
+                    getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+            if (networkInfo != null && networkInfo.isConnected()) {
+                //String rueckgabe=invokeWS().execute(email, password, url);
+                prgDialog.show();
+                String urlstring =email+"..."+password+"..."+url;
+                new invokeWS().execute(urlstring);
+                Toast.makeText(getApplicationContext(), "rueckgabe", Toast.LENGTH_LONG).show();
+            }else{
+                Toast.makeText(getApplicationContext(), "No Network", Toast.LENGTH_LONG).show();
+            }
+
 		} 
 		// When any of the Edit View control left blank
 		else{
@@ -100,51 +114,81 @@ public class LoginActivity extends Activity {
 	
 	/**
 	 * Method that performs RESTful webservice invocations
-	 * 
+	 *
 	 * @param params
 	 */
-	public String invokeWS(String email, String password, String url){
-		// Show Progress Dialog
-		 prgDialog.show();
-        String BASE_URL="http://"+url+"/api";
+	private class invokeWS extends AsyncTask<String, Void, String> {
+        // Show Progress Dialog
 
-        HttpHost targetHost = new HttpHost(url,80,"http");
-        CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        credsProvider.setCredentials(AuthScope.ANY,new UsernamePasswordCredentials(email, password));
+        String email = "android";
+        String password = "f3POOlbHbrkcESgf1RnKJKNFrBUbmXqlFNHwgMF6";
+        String url = "192.168.1.146";
 
-        AuthCache authCache = new BasicAuthCache();
-        authCache.put(targetHost,new BasicScheme());
+        @Override
+        protected String doInBackground(String... urls) {
 
-        final HttpClientContext context = HttpClientContext.create();
-        context.setCredentialsProvider(credsProvider);
-        context.setAuthCache(authCache);
 
-        SSLContext sslContext = SSLContexts.createSystemDefault();
-        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext);
+            try {
+                ///TODO: switch if https
+                HttpHost targetHost = new HttpHost(url, 80, "http");
 
-        HttpClient client = HttpClientBuilder.create().setSSLSocketFactory(sslsf).build();
-        try {
-            HttpResponse response = client.execute(new HttpGet(BASE_URL), context);
-            String json_string = EntityUtils.toString(response.getEntity());
-            Log.i("JSON", json_string);
-            int statusCode = response.getStatusLine().getStatusCode();
-            Log.i("RESP",response.getEntity().getContent().toString());
+                DefaultHttpClient httpclient = new DefaultHttpClient();
+                try {
+                    // Store the user login
+                    httpclient.getCredentialsProvider().setCredentials(
+                            new AuthScope(targetHost.getHostName(), targetHost.getPort()),
+                            new UsernamePasswordCredentials(email, password));
 
-            Log.i("STATUS", "" + statusCode);
-            prgDialog.hide();
+                    // Create AuthCache instance
+                    AuthCache authCache = new BasicAuthCache();
+                    // Generate BASIC scheme object and add it to the local
+                    // auth cache
+                    BasicScheme basicAuth = new BasicScheme();
+                    authCache.put(targetHost, basicAuth);
 
-            return response.toString();
+                    // Add AuthCache to the execution context
+                    BasicHttpContext localcontext = new BasicHttpContext();
+                    localcontext.setAttribute(HttpClientContext.AUTH_CACHE, authCache);
 
-        }catch(Exception e){
-            e.printStackTrace();
+                    // Create request
+                    // You can also use the full URI http://www.google.com/
+                    HttpGet httpget = new HttpGet("/API/");
+                    // Execute request
+                    HttpResponse response = httpclient.execute(targetHost, httpget, localcontext);
+
+                    HttpEntity entity = response.getEntity();
+                    System.out.println(EntityUtils.toString(entity));
+
+                    String json_string = EntityUtils.toString(response.getEntity());
+                    Log.i("JSON", json_string);
+                    int statusCode = response.getStatusLine().getStatusCode();
+                    Log.i("RESP", response.getEntity().getContent().toString());
+
+                    Log.i("STATUS", "" + statusCode);
+                    //        prgDialog.hide();
+                    //return downloadUrl(urls[0]);
+                    return response.toString();
+
+
+                } finally {
+                    httpclient.getConnectionManager().shutdown();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+
+            }
+            return "failed";
         }
-        prgDialog.hide();
 
-        return "";
-
-
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(String result) {
+            urlET.setText(result);
+        }
     }
-	
+
+
+
 	/**
 	 * Method which navigates from Login Activity to Home Activity
 	 */
