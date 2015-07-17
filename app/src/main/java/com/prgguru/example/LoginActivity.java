@@ -33,6 +33,8 @@ import org.json.JSONObject;
 
 import javax.net.ssl.SSLContext;
 
+import static com.prgguru.example.Utility.parser;
+
 //#import com.loopj.android.http.AsyncHttpClient;
 //import com.loopj.android.http.AsyncHttpResponseHandler;
 //import com.loopj.android.http.RequestParams;
@@ -182,8 +184,8 @@ public class LoginActivity extends Activity {
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
-            resultView.setText(result);
-            Toast.makeText(getApplicationContext(), "rueckgabe", Toast.LENGTH_LONG).show();
+            resultView.setText(parser(result));
+            Toast.makeText(getApplicationContext(), result.substring(0,3), Toast.LENGTH_LONG).show();
             prgDialog.hide();
         }
     }

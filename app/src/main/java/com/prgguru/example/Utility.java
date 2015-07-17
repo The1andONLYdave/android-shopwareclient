@@ -2,6 +2,9 @@ package com.prgguru.example;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Class which has Utility methods
  * 
@@ -34,5 +37,31 @@ public class Utility {
 	 */
 	public static boolean isNotNull(String txt){
 		return txt!=null && txt.trim().length()>0 ? true: false;
+	}
+
+	public static String parser(String result){
+
+        String serverCode=result.substring(0,3);
+        String json=result.substring(3);
+        String success="";
+
+       try {
+           JSONObject jObj = new JSONObject(result);
+           success = jObj.getString("success");
+
+       } catch (JSONException e) {
+           //Log.e("Json error",e);
+       }
+
+//		JSONObject subObj = jObj.getJSONObject("message");
+//		String city = subObj.getString("city");
+
+//		JSONArray jArr = jObj.getJSONArray("list");
+//		for (int i=0; i < jArr.length(); i++) {
+//			JSONObject obj = jArr.getJSONObject(i);
+
+
+
+		return success;
 	}
 }
