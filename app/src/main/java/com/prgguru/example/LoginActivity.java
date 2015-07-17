@@ -97,9 +97,8 @@ public class LoginActivity extends Activity {
             if (networkInfo != null && networkInfo.isConnected()) {
                 //String rueckgabe=invokeWS().execute(email, password, url);
                 prgDialog.show();
-                String urlstring =email+"..."+password+"..."+url;
+                String[] urlstring ={email, password, url};
                 new invokeWS().execute(urlstring);
-                Toast.makeText(getApplicationContext(), "rueckgabe", Toast.LENGTH_LONG).show();
             }else{
                 Toast.makeText(getApplicationContext(), "No Network", Toast.LENGTH_LONG).show();
             }
@@ -118,26 +117,33 @@ public class LoginActivity extends Activity {
 	 * @param params
 	 */
 	private class invokeWS extends AsyncTask<String, Void, String> {
-        // Show Progress Dialog
-
-        String email = "android";
-        String password = "f3POOlbHbrkcESgf1RnKJKNFrBUbmXqlFNHwgMF6";
-        String url = "192.168.1.146";
 
         @Override
         protected String doInBackground(String... urls) {
-
+            String json_string;
 
             try {
+                String email, password, url;
+
+                //
+
+                email=pParams[0];
+                password=pParams[1];
+                url=pParams[2];
                 ///TODO: switch if https
                 HttpHost targetHost = new HttpHost(url, 80, "http");
+                Log.i("targetHost.getHostName", targetHost.getHostName());
 
                 DefaultHttpClient httpclient = new DefaultHttpClient();
+
                 try {
                     // Store the user login
+
                     httpclient.getCredentialsProvider().setCredentials(
                             new AuthScope(targetHost.getHostName(), targetHost.getPort()),
                             new UsernamePasswordCredentials(email, password));
+
+                    Log.i("targetHost.getHostName", targetHost.getHostName());
 
                     // Create AuthCache instance
                     AuthCache authCache = new BasicAuthCache();
@@ -152,22 +158,18 @@ public class LoginActivity extends Activity {
 
                     // Create request
                     // You can also use the full URI http://www.google.com/
-                    HttpGet httpget = new HttpGet("/API/");
+                    HttpGet httpget = new HttpGet("/api/");
                     // Execute request
                     HttpResponse response = httpclient.execute(targetHost, httpget, localcontext);
-
-                    HttpEntity entity = response.getEntity();
-                    System.out.println(EntityUtils.toString(entity));
-
-                    String json_string = EntityUtils.toString(response.getEntity());
-                    Log.i("JSON", json_string);
+                    json_string = EntityUtils.toString(response.getEntity());
+                    Log.i("LoginActivityDebug", json_string);
                     int statusCode = response.getStatusLine().getStatusCode();
-                    Log.i("RESP", response.getEntity().getContent().toString());
+                    // Log.i("RESP", response.getEntity().getContent().toString());
 
-                    Log.i("STATUS", "" + statusCode);
-                    //        prgDialog.hide();
+                    // Log.i("STATUS", "" + statusCode);
+                    //
                     //return downloadUrl(urls[0]);
-                    return response.toString();
+                    //return response.toString();
 
 
                 } finally {
@@ -175,15 +177,18 @@ public class LoginActivity extends Activity {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                return "failed";
 
             }
-            return "failed";
+            return json_string;
         }
 
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
             urlET.setText(result);
+            Toast.makeText(getApplicationContext(), "rueckgabe", Toast.LENGTH_LONG).show();
+            prgDialog.hide();
         }
     }
 
