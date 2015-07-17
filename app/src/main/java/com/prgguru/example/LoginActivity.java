@@ -51,6 +51,7 @@ public class LoginActivity extends Activity {
 	// Passwpod Edit View Object
 	EditText pwdET;
 	EditText urlET;
+    TextView resultView;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -62,12 +63,15 @@ public class LoginActivity extends Activity {
 		// Find Password Edit View control by ID
 		pwdET = (EditText)findViewById(R.id.loginPassword);
 		urlET = (EditText)findViewById(R.id.loginURL);
+        resultView = (TextView)findViewById(R.id.login_result);
 		// Instantiate Progress Dialog object
 		prgDialog = new ProgressDialog(this);
 		// Set Progress Dialog Text
         prgDialog.setMessage("Please wait...");
         // Set Cancelable as False
         prgDialog.setCancelable(false);
+
+        //TODO: make save prefs
         emailET.setText("android");
         pwdET.setText("f3POOlbHbrkcESgf1RnKJKNFrBUbmXqlFNHwgMF6");
         urlET.setText("192.168.1.146");
@@ -95,7 +99,6 @@ public class LoginActivity extends Activity {
                     getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
             if (networkInfo != null && networkInfo.isConnected()) {
-                //String rueckgabe=invokeWS().execute(email, password, url);
                 prgDialog.show();
                 String[] urlstring ={email, password, url};
                 new invokeWS().execute(urlstring);
@@ -124,8 +127,6 @@ public class LoginActivity extends Activity {
 
             try {
                 String email, password, url;
-
-                //
 
                 email=urls[0];
                 password=urls[1];
@@ -164,13 +165,8 @@ public class LoginActivity extends Activity {
                     json_string = EntityUtils.toString(response.getEntity());
                     Log.i("LoginActivityDebug", json_string);
                     int statusCode = response.getStatusLine().getStatusCode();
-                    // Log.i("RESP", response.getEntity().getContent().toString());
-
-                    // Log.i("STATUS", "" + statusCode);
-                    //
-                    //return downloadUrl(urls[0]);
-                    //return response.toString();
-
+                    Log.d("LoginActivityDebug", Integer.toString(statusCode));
+                    json_string =Integer.toString(statusCode)+ json_string;
 
                 } finally {
                     httpclient.getConnectionManager().shutdown();
@@ -186,7 +182,7 @@ public class LoginActivity extends Activity {
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
-            urlET.setText(result);
+            resultView.setText(result);
             Toast.makeText(getApplicationContext(), "rueckgabe", Toast.LENGTH_LONG).show();
             prgDialog.hide();
         }

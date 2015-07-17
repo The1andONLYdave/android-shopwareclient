@@ -34,7 +34,7 @@
             android:id="@+id/loginURL"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:hint="Servername/IP without http:// or /"
+            android:hint="Enter Servername/IP"
             android:inputType="text" />
 
 
@@ -79,6 +79,15 @@
             android:text="Signup"
             android:textColor="#228b22"
             android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/login_result"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dip"
+            android:textColor="#e30000"
+            android:textStyle="bold" />
+
     </LinearLayout>
 
 </ScrollView>
