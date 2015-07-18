@@ -1,8 +1,10 @@
 package com.dlka.shopwareclient;
 
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -13,6 +15,9 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -90,8 +95,11 @@ public class LoginActivity extends Activity {
         String url = urlET.getText().toString();
         String path = pthET.getText().toString();
 
-        // When Email Edit View and Password Edit View have values other than Null
-        if (Utility.isNotNull(email) && Utility.isNotNull(password) && Utility.isNotNull(url)) {
+        if (email.isEmpty()) { YoYo.with(Techniques.Wobble).duration(700).playOn(findViewById(R.id.loginName));}
+        else if (password.isEmpty()) { YoYo.with(Techniques.Pulse).duration(700).playOn(findViewById(R.id.loginPassword));}
+        else if (url.isEmpty()) { YoYo.with(Techniques.RubberBand).duration(700).playOn(findViewById(R.id.loginURL));}
+        else if (path.isEmpty()) { YoYo.with(Techniques.Shake).duration(700).playOn(findViewById(R.id.loginURLpath));}
+        else{
             // Put Http parameter username with value of Email Edit View control
             // Invoke RESTful Web Service with Http parameters
 
@@ -107,10 +115,8 @@ public class LoginActivity extends Activity {
             }
 
         }
-        // When any of the Edit View control left blank
-        else {
-            Toast.makeText(getApplicationContext(), "Please fill the form, don't leave any field blank", Toast.LENGTH_LONG).show();
-        }
+
+
 
     }
 
@@ -176,10 +182,10 @@ public class LoginActivity extends Activity {
         return answer;
     }
 
-    public void navigatetoSettingsActivity() {
-        //Intent homeIntent = new Intent(getApplicationContext(),HomeActivity.class);
-        //homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        //startActivity(homeIntent);
+    public void navigatetoSettingsActivity(View view) {
+        Intent homeIntent = new Intent(getApplicationContext(),SettingsActivity.class);
+        homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(homeIntent);
     }
 
     public void addListenerOnSpinnerItemSelection() {
