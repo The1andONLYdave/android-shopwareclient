@@ -183,9 +183,9 @@ public class LoginActivity extends Activity {
     }
 
     public void navigatetoSettingsActivity(View view) {
-        Intent homeIntent = new Intent(getApplicationContext(),SettingsActivity.class);
-        homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(homeIntent);
+      //  Intent homeIntent = new Intent(getApplicationContext(),SettingsActivity.class);
+      //  homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+      //  startActivity(homeIntent);
     }
 
     public void addListenerOnSpinnerItemSelection() {
