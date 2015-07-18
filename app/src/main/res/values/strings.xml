@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">AndroidRestFulWSExample</string>
+    <string name="app_name">ShopwareClient</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_login">Login</string>
+    <string name="title_activity_login">ShopwareClient</string>
     <string name="title_activity_home">HomeActivity</string>
     <string name="register_title">Register</string>
     <string name="login_title">Login</string>
@@ -12,5 +12,20 @@
     <string name="email">Email</string>
     <string name="pwd">Password</string>
     <string name="url">URL/Servername</string>
-<string name="btnRegister">Register</string>
+    <string name="pth">API-Call</string>
+    <string name="btnRegister">Register</string>
+    <string name="array_prompt">Choose a API-Call</string>
+
+    <string-array name="array_entries">
+        <item>Cache IDs</item>
+        <item>United States</item>
+        <item>Indonesia</item>
+        <item>France</item>
+        <item>Italy</item>
+        <item>Singapore</item>
+        <item>New Zealand</item>
+        <item>India</item>
+    </string-array>
+
 </resources>
+

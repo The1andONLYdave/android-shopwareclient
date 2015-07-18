@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent">
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="10dip" >
+        android:padding="10dip">
 
         <TextView
             android:layout_width="fill_parent"
@@ -34,9 +34,8 @@
             android:id="@+id/loginURL"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:hint="Servername/IP without http:// or /"
+            android:hint="Enter Servername/IP"
             android:inputType="text" />
-
 
         <TextView
             android:layout_width="fill_parent"
@@ -52,12 +51,40 @@
             android:inputType="textPassword" />
 
         <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dip"
+            android:text="@string/pth" />
+
+        <EditText
+            android:id="@+id/loginURLpath"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter API URL "
+            android:inputType="text" />
+
+        <TextView
             android:id="@+id/login_error"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:padding="10dip"
             android:textColor="#e30000"
             android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/login_result"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dip"
+            android:textColor="#e30000"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/spinner1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/array_entries"
+            android:prompt="@string/array_prompt" />
 
         <Button
             android:id="@+id/btnLogin"
@@ -66,7 +93,7 @@
             android:layout_marginTop="20dip"
             android:background="#ff6347"
             android:onClick="loginUser"
-            android:text="Login"
+            android:text="Query Shopware"
             android:textColor="#fff" />
 
         <Button
@@ -75,10 +102,12 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="40dip"
             android:background="@null"
-            android:onClick="navigatetoRegisterActivity"
-            android:text="Signup"
+            android:onClick="navigatetoSettingsActivity"
+            android:text="Settings"
             android:textColor="#228b22"
             android:textStyle="bold" />
+
+
     </LinearLayout>
 
 </ScrollView>
